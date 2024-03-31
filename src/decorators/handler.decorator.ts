@@ -13,19 +13,19 @@ export type HandlerOptions = Pick<HandlerMeta, 'queue' | 'exchange'>;
 
 export const SYRNYKMQ_HANDLER = Symbol('SYRNYKMQ_HANDLER');
 
-export const createHandlerDecorator = (type: HandlerType, patterns: string[] | string, options: HandlerOptions) =>
+export const createHandlerDecorator = (type: HandlerType, patterns: string[] | string, options?: HandlerOptions) =>
   SetMetadata<any, HandlerMeta>(SYRNYKMQ_HANDLER, {
     type,
-    queue: options.queue,
-    exchange: options.exchange,
+    queue: options?.queue,
+    exchange: options?.exchange,
     patterns: typeof patterns === 'string' ? [patterns] : patterns,
   });
 
-export const EventHandler = (patterns: string[] | string, options: HandlerOptions) =>
+export const EventHandler = (patterns: string[] | string, options?: HandlerOptions) =>
   createHandlerDecorator('event', patterns, options);
 
-export const CommandHandler = (patterns: string[] | string, options: HandlerOptions) =>
+export const CommandHandler = (patterns: string[] | string, options?: HandlerOptions) =>
   createHandlerDecorator('command', patterns, options);
 
-export const QueryHandler = (patterns: string[] | string, options: HandlerOptions) =>
+export const QueryHandler = (patterns: string[] | string, options?: HandlerOptions) =>
   createHandlerDecorator('query', patterns, options);

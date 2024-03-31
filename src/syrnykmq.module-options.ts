@@ -1,6 +1,7 @@
 import { LoggerService } from '@nestjs/common';
 import { AmqpConnectionOptions } from 'amqp-connection-manager/dist/types/AmqpConnectionManager';
 import * as amqplib from 'amqplib';
+import { SyrnykmqDeserializer, SyrnykmqSerializer } from './serial';
 
 export type Binding = {
   exchange: string;
@@ -30,4 +31,7 @@ export type SyrnykmqModuleOptions = {
   exchanges?: Exchange[];
   queues?: (Queue | string)[];
   resolveTopics?: boolean;
+  autoAck?: boolean;
+  serializer?: SyrnykmqSerializer;
+  deserializer?: SyrnykmqDeserializer;
 };

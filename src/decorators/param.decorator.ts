@@ -1,8 +1,9 @@
 import { assignMetadata, PipeTransform, Type } from '@nestjs/common';
 import { ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
 
-export const SYRNYKMQ_CONTENT_PARAM = 10;
-export const SYRNYKMQ_MESSAGE_PARAM = 11;
+export const SYRNYKMQ_CONTENT_PARAM = 0;
+export const SYRNYKMQ_MESSAGE_PARAM = 1;
+export const SYRNYKMQ_CONTROLS_PARAM = 2;
 
 export const createParamDecorator =
   (
@@ -40,4 +41,14 @@ export function Message(
   ...pipes: (Type<PipeTransform> | PipeTransform)[]
 ): ParameterDecorator {
   return createParamDecorator(propertyOrPipe, SYRNYKMQ_MESSAGE_PARAM, ...pipes);
+}
+
+export function Controls(): ParameterDecorator;
+export function Controls(...pipes: (Type<PipeTransform> | PipeTransform)[]): ParameterDecorator;
+export function Controls(propertyKey?: string, ...pipes: (Type<PipeTransform> | PipeTransform)[]): ParameterDecorator;
+export function Controls(
+  propertyOrPipe?: string | (Type<PipeTransform> | PipeTransform),
+  ...pipes: (Type<PipeTransform> | PipeTransform)[]
+): ParameterDecorator {
+  return createParamDecorator(propertyOrPipe, SYRNYKMQ_CONTROLS_PARAM, ...pipes);
 }

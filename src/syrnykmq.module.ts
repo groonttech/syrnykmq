@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
 import { ConfigurableModuleClass } from './syrnykmq.module-definition';
-import { SyrnykmqService } from './syrnykmq.service';
-import { SyrnykmqHandlersExplorer } from './handlers.explorer';
+import { SyrnykmqConsumerService, SyrnykmqManagerService, SyrnykmqTopologyService } from './services';
 
 @Module({
   imports: [DiscoveryModule],
-  providers: [SyrnykmqService, SyrnykmqHandlersExplorer],
+  providers: [SyrnykmqManagerService, SyrnykmqTopologyService, SyrnykmqConsumerService],
 })
 export class SyrnykmqModule extends ConfigurableModuleClass {}
