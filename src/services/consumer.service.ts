@@ -64,7 +64,7 @@ export class SyrnykmqConsumerService {
           : defaultDeserializer(message.content);
         this._replyMessage$.next({
           correlationId: message.properties.correlationId,
-          content: content,
+          content,
           error: message.properties.headers?.['x-error'] || undefined,
         });
       },

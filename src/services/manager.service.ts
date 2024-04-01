@@ -35,7 +35,7 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
   }
 
   public async onApplicationBootstrap(): Promise<void> {
-    return new Promise((resolveSetup, rejectSetup) => {
+    return new Promise(resolveSetup => {
       this.manager = connect(this.options.urls, {
         reconnectTimeInSeconds: this.options.reconnectTimeInSeconds || DEFAULT_RECONNECT_TIME,
         heartbeatIntervalInSeconds: this.options.heartbeatIntervalInSeconds || DEFAULT_HEARTBEAT_TIME,
@@ -54,7 +54,7 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
         });
       });
       this.manager.on('connectFailed', err => {
-        //! throw custom error
+        // ! Throw custom error
         this.logger.error('Failed to connect to RabbitMQ broker', err.err);
         resolveSetup();
       });
@@ -64,7 +64,7 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
     });
   }
 
-  public async onApplicationShutdown(signal?: string): Promise<void> {
+  public async onApplicationShutdown(): Promise<void> {
     await this.manager.close();
   }
 }

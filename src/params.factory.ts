@@ -1,8 +1,8 @@
 import { ParamData } from '@nestjs/common';
 
 export class SyrnykmqParamsFactory {
-  public exchangeKeyForValue(type: number, data: ParamData, args: any[]) {
+  public exchangeKeyForValue(type: number, propertyKey: ParamData, args: Record<string, unknown>[]) {
     if (!args) return null;
-    return data && !(typeof data === 'object') ? args[type]?.[data] : args[type];
+    return propertyKey && !(typeof propertyKey === 'object') ? args[type]?.[propertyKey] : args[type];
   }
 }

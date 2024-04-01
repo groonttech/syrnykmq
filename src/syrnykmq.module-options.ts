@@ -6,7 +6,7 @@ import { SyrnykmqDeserializer, SyrnykmqSerializer } from './serial';
 export type Binding = {
   exchange: string;
   patterns: string[];
-  args?: any;
+  args?: unknown;
 };
 
 export type Exchange = amqplib.Options.AssertExchange & {

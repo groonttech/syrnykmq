@@ -14,7 +14,7 @@ export type HandlerOptions = Pick<HandlerMeta, 'queue' | 'exchange'>;
 export const SYRNYKMQ_HANDLER = Symbol('SYRNYKMQ_HANDLER');
 
 export const createHandlerDecorator = (type: HandlerType, patterns: string[] | string, options?: HandlerOptions) =>
-  SetMetadata<any, HandlerMeta>(SYRNYKMQ_HANDLER, {
+  SetMetadata<symbol, HandlerMeta>(SYRNYKMQ_HANDLER, {
     type,
     queue: options?.queue,
     exchange: options?.exchange,
