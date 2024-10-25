@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { DiscoveryModule } from '@nestjs/core';
+import { DiscoveryModule, Reflector } from '@nestjs/core';
 import { ConfigurableModuleClass } from './syrnykmq.module-definition';
 import {
   SyrnykmqConsumerService,
@@ -9,7 +9,7 @@ import {
 } from './services';
 
 @Module({
-  imports: [DiscoveryModule],
+  imports: [DiscoveryModule, Reflector],
   providers: [SyrnykmqManagerService, SyrnykmqTopologyService, SyrnykmqConsumerService, SyrnykmqProducerService],
   exports: [SyrnykmqProducerService],
 })

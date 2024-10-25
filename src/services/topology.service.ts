@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import { MODULE_OPTIONS_TOKEN } from '../syrnykmq.module-definition';
 import { Binding, Exchange, Queue, SyrnykmqModuleOptions } from '../syrnykmq.module-options';
 import { Channel } from 'amqplib';
+import { NotSetDefaultExchangeException, NotSetDefaultQueueException } from './exceptions';
 
 @Injectable()
 export class SyrnykmqTopologyService {
@@ -14,12 +15,12 @@ export class SyrnykmqTopologyService {
   }
 
   public get defaultExchange(): string {
-    if (!this._defaultExchange) throw Error('default exchange is not set');
+    if (!this._defaultExchange) throw new NotSetDefaultExchangeException();
     return this._defaultExchange;
   }
 
   public get defaultQueue(): string {
-    if (!this._defaultQueue) throw Error('default queue is not set');
+    if (!this._defaultQueue) throw new NotSetDefaultQueueException();
     return this._defaultQueue;
   }
 
