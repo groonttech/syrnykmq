@@ -100,7 +100,16 @@ export class SyrnykmqConsumerService {
     channel: Channel,
     handlerWrappers: HandlerWrapper[],
   ): Promise<void> {
-    const wrapper = handlerWrappers.find(wrapper => wrapper.pattern === message.fields.routingKey);
+    const wrapper = handlerWrappers.find(wrapper => {
+      const regexPattern = new RegExp(
+        `^${wrapper.pattern
+            .replace(/\./g, '\\.')
+            .replace(/\*/g, '[^.]+')
+            .replace(/#/g, '.*')
+        }$`
+      );
+      return regexPattern.test(message.fields.routingKey);
+    });
     if (!wrapper) return;
     const controls: HandlerControls = {
       ack: () => channel.ack(message),
