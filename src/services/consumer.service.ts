@@ -107,21 +107,39 @@ export class SyrnykmqConsumerService {
       nack: (requeue?: boolean) => channel.nack(message, undefined, requeue),
       // TODO: Add response headers control
     };
-    const content = this.options.deserializer
-      ? this.options.deserializer(message.content)
-      : defaultDeserializer(message.content);
-    const response = await wrapper.handler(content, message, controls);
-    if (wrapper.type !== 'event' && message.properties.replyTo) {
-      const { replyTo, correlationId } = message.properties;
-      const serializedResponse = this.options.serializer
-        ? this.options.serializer(response)
-        : defaultSerializer(response);
-      channel.publish('', replyTo, serializedResponse, {
-        correlationId,
-        persistent: false,
-      });
+    try {
+      const content = this.options.deserializer
+        ? this.options.deserializer(message.content)
+        : defaultDeserializer(message.content);
+      const response = await wrapper.handler(content, message, controls);
+      if (wrapper.type !== 'event' && message.properties.replyTo) {
+        const { replyTo, correlationId } = message.properties;
+        const serializedResponse = this.options.serializer
+          ? this.options.serializer(response)
+          : defaultSerializer(response);
+        channel.publish('', replyTo, serializedResponse, {
+          correlationId,
+          persistent: false,
+        });
+      }
+      if (this.options.autoAck || this.options.autoAck === undefined) channel.ack(message);
+    } catch (error: unknown) {
+      if (wrapper.type !== 'event' && message.properties.replyTo) {
+        const { replyTo, correlationId } = message.properties;
+        const serializedError = this.options.serializer
+          ? this.options.serializer(error as Record<string, unknown>)
+          : defaultSerializer(error as Record<string, unknown>);
+        channel.publish('', replyTo, serializedError, {
+          correlationId,
+          persistent: false,
+          headers: { 'x-error': (error as Error).name },
+        });
+        if (this.options.autoAck || this.options.autoAck === undefined) channel.ack(message);
+      }
+      else {
+        if (this.options.autoAck || this.options.autoAck === undefined) channel.nack(message, undefined, false);
+      }
     }
-    if (this.options.autoAck || this.options.autoAck === undefined) channel.ack(message);
   }
 
   private exploreHandlers(): HandlerWrapper[] {

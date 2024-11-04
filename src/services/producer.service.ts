@@ -28,7 +28,7 @@ export class SyrnykmqProducerService {
     await this.managerService.channel.publish(exchange, routingKey, serializedContent, options);
   }
 
-  public async request<TResponse extends Record<string, unknown>, TContent extends Record<string, unknown>>(
+  public async request<TResponse extends Record<string, unknown>, TContent extends Record<string, unknown> = Record<string, unknown>>(
     exchange: string,
     routingKey: string,
     content: TContent,

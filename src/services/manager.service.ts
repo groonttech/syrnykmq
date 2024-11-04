@@ -49,6 +49,7 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
             await this.topologyService.setupExchanges(channel);
             await this.topologyService.setupQueues(channel);
             await this.consumerService.setupHandlers(channel);
+            await this.consumerService.setupReplyMessageHandler(channel);
             resolveSetup();
           },
         });
