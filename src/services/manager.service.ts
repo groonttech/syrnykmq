@@ -40,7 +40,7 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
       this.manager = connect(this.options.urls, {
         reconnectTimeInSeconds: this.options.reconnectTimeInSeconds || DEFAULT_RECONNECT_TIME,
         heartbeatIntervalInSeconds: this.options.heartbeatIntervalInSeconds || DEFAULT_HEARTBEAT_TIME,
-        connectionOptions: this.options.connectionOptions || {},
+        connectionOptions: this.options.connectionOptions || {}
       });
       this.manager.on('connect', () => {
         this.logger.log('Successfully connected to AMQP broker');
@@ -49,18 +49,27 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
           setup: async (channel: Channel) => {
             await this.topologyService.setupExchanges(channel);
             await this.topologyService.setupQueues(channel);
+<<<<<<< Updated upstream
+=======
+            await this.consumerService.setupReplyMessageHandler(channel);
+>>>>>>> Stashed changes
             await this.consumerService.setupHandlers(channel);
             resolveSetup();
           },
         });
       });
+      
       this.manager.on('connectFailed', err => {
+<<<<<<< Updated upstream
         // ! Throw custom error
         //this.logger.error('Failed to connect to RabbitMQ broker', err.err);
         throw new FailedConnectToBrokerException(err.err.message)
         //resolveSetup();
+=======
+        throw new FailedConnectToBrokerException(err.err.message)
+>>>>>>> Stashed changes
       });
-      this.manager.on('disconnect', () => {
+      this.manager.on('disconnect', (params) => {
         this.logger.warn('Disconnected from AMQP broker');
       });
     });

@@ -19,7 +19,12 @@ export type Exchange = amqplib.Options.AssertExchange & {
 export type Queue = amqplib.Options.AssertQueue & {
   name: string;
   default?: boolean;
+<<<<<<< Updated upstream
   bindings?: Binding[]; // Test
+=======
+  bindings?: Binding[];
+  useDefaultDLX?: boolean;
+>>>>>>> Stashed changes
 };
 
 export type SyrnykmqModuleOptions = {
