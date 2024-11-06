@@ -26,7 +26,6 @@ export type NackControl = (requeue?: boolean) => void;
 export type HandlerControls = {
   readonly ack: AckControl;
   readonly nack: NackControl;
-  readonly setHeaders: (headers: Record<string, any>) => void;
 };
 
 export type ReplyMessage = {
@@ -102,9 +101,6 @@ export class SyrnykmqConsumerService {
     handlerWrappers: HandlerWrapper[],
   ): Promise<void> {
     const wrapper = handlerWrappers.find(wrapper => {
-      if (this.options.resolveTopics === false) 
-        return wrapper.pattern === message.fields.routingKey;
-
       const regexPattern = new RegExp(
         `^${wrapper.pattern
             .replace(/\./g, '\\.')
@@ -114,23 +110,16 @@ export class SyrnykmqConsumerService {
       );
       return regexPattern.test(message.fields.routingKey);
     });
-
     if (!wrapper) return;
-
-    let responseHeaders: Record<string, any> = {};
     const controls: HandlerControls = {
       ack: () => channel.ack(message),
       nack: (requeue?: boolean) => channel.nack(message, undefined, requeue),
-      setHeaders: (headers: Record<string, any>) => {
-        responseHeaders = { ...responseHeaders, ...headers };
-      },
+      // TODO: Add response headers control
     };
-    
     const content = this.options.deserializer
       ? this.options.deserializer(message.content)
       : defaultDeserializer(message.content);
     const response = await wrapper.handler(content, message, controls);
-
     if (wrapper.type !== 'event' && message.properties.replyTo) {
       const { replyTo, correlationId } = message.properties;
       const serializedResponse = this.options.serializer
@@ -139,16 +128,13 @@ export class SyrnykmqConsumerService {
       channel.publish('', replyTo, serializedResponse, {
         correlationId,
         persistent: false,
-        headers: responseHeaders,
       });
     }
-
     if (this.options.autoAck || this.options.autoAck === undefined) channel.ack(message);
   }
 
   private exploreHandlers(): HandlerWrapper[] {
     const providerWrappers = this.discoveryService.getProviders();
-
     return providerWrappers
       .filter(wrapper => wrapper.metatype && this.reflector.get(SYRNYKMQ_HANDLERS_GROUP, wrapper.metatype))
       .filter(wrapper => wrapper.instance && Object.getPrototypeOf(wrapper.instance))
@@ -158,7 +144,6 @@ export class SyrnykmqConsumerService {
 
   private exploreHandlersGroup(wrapper: InstanceWrapper): HandlerWrapper[] {
     const groupMeta = this.reflector.get<HandlersGroupMeta>(SYRNYKMQ_HANDLERS_GROUP, wrapper.metatype);
-
     return this.metadataScanner
       .getAllMethodNames(Object.getPrototypeOf(wrapper.instance))
       .filter(methodKey => this.reflector.get<HandlerMeta>(SYRNYKMQ_HANDLER, wrapper.instance[methodKey]))
@@ -183,7 +168,6 @@ export class SyrnykmqConsumerService {
       'amqp',
     );
     const handlerMeta = this.reflector.get<HandlerMeta>(SYRNYKMQ_HANDLER, consumerWrapper.instance[methodKey]);
-    
     return handlerMeta.patterns.map<HandlerWrapper>(pattern => ({
       instance: consumerWrapper.instance,
       pattern,
