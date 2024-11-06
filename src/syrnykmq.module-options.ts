@@ -13,13 +13,13 @@ export type Exchange = amqplib.Options.AssertExchange & {
   name: string;
   default?: boolean;
   type: 'direct' | 'topic' | 'headers' | 'fanout' | 'match';
-  bindings?: Binding[];
+  bindings?: Binding[]; // Test
 };
 
 export type Queue = amqplib.Options.AssertQueue & {
   name: string;
   default?: boolean;
-  bindings?: Binding[];
+  bindings?: Binding[]; // Test
 };
 
 export type SyrnykmqModuleOptions = {
