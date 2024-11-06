@@ -54,6 +54,7 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
             await this.consumerService.setupReplyMessageHandler(channel);
 >>>>>>> Stashed changes
             await this.consumerService.setupHandlers(channel);
+            await this.consumerService.setupReplyMessageHandler(channel);
             resolveSetup();
           },
         });

@@ -29,11 +29,11 @@
   },
   "dependencies": {
     "amqp-connection-manager": "^4.1.14",
-    "amqplib": "^0.10.3"
+    "amqplib": "^0.10.3",
+    "@types/amqp-connection-manager": "^3.4.1",
+    "@types/amqplib": "^0.10.5"
   },
   "devDependencies": {
-    "@types/amqp-connection-manager": "^3.4.1",
-    "@types/amqplib": "^0.10.5",
     "@types/jest": "^29.5.1",
     "@types/node": "^20.11.30",
     "dotenv": "^16.4.5",

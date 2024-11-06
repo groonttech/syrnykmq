@@ -125,24 +125,7 @@ export class SyrnykmqConsumerService {
         responseHeaders = { ...responseHeaders, ...headers };
       },
     };
-    
-<<<<<<< Updated upstream
-    const content = this.options.deserializer
-      ? this.options.deserializer(message.content)
-      : defaultDeserializer(message.content);
-    const response = await wrapper.handler(content, message, controls);
-
-    if (wrapper.type !== 'event' && message.properties.replyTo) {
-      const { replyTo, correlationId } = message.properties;
-      const serializedResponse = this.options.serializer
-        ? this.options.serializer(response)
-        : defaultSerializer(response);
-      channel.publish('', replyTo, serializedResponse, {
-        correlationId,
-        persistent: false,
-        headers: responseHeaders,
-      });
-=======
+      
     try {
       const content = this.options.deserializer
         ? this.options.deserializer(message.content)
@@ -175,10 +158,10 @@ export class SyrnykmqConsumerService {
       else {
         if (this.options.autoAck || this.options.autoAck === undefined) channel.nack(message, undefined, false);
       }
->>>>>>> Stashed changes
     }
 
     if (this.options.autoAck || this.options.autoAck === undefined) channel.ack(message);
+    }
   }
 
   private exploreHandlers(): HandlerWrapper[] {
