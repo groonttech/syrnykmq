@@ -3,13 +3,6 @@ import { MODULE_OPTIONS_TOKEN } from '../syrnykmq.module-definition';
 import { Binding, Exchange, Queue, SyrnykmqModuleOptions } from '../syrnykmq.module-options';
 import { Channel } from 'amqplib';
 import { NotSetDefaultExchangeException, NotSetDefaultQueueException } from './exceptions';
-<<<<<<< Updated upstream
-=======
-
-const DLQ_EXCHANGE = 'dlx';
-const DLQ_QUEUE = 'dlq';
-const RETRY_EXCHANGE = 'retry_exchange';
->>>>>>> Stashed changes
 
 @Injectable()
 export class SyrnykmqTopologyService {

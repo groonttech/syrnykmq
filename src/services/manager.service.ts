@@ -49,26 +49,15 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
           setup: async (channel: Channel) => {
             await this.topologyService.setupExchanges(channel);
             await this.topologyService.setupQueues(channel);
-<<<<<<< Updated upstream
-=======
             await this.consumerService.setupReplyMessageHandler(channel);
->>>>>>> Stashed changes
             await this.consumerService.setupHandlers(channel);
-            await this.consumerService.setupReplyMessageHandler(channel);
             resolveSetup();
           },
         });
       });
       
       this.manager.on('connectFailed', err => {
-<<<<<<< Updated upstream
-        // ! Throw custom error
-        //this.logger.error('Failed to connect to RabbitMQ broker', err.err);
-        throw new FailedConnectToBrokerException(err.err.message)
-        //resolveSetup();
-=======
-        throw new FailedConnectToBrokerException(err.err.message)
->>>>>>> Stashed changes
+        throw new FailedConnectToBrokerException(err.err.message);
       });
       this.manager.on('disconnect', (params) => {
         this.logger.warn('Disconnected from AMQP broker');
