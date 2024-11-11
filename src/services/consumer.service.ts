@@ -159,8 +159,6 @@ export class SyrnykmqConsumerService {
         if (this.options.autoAck || this.options.autoAck === undefined) channel.nack(message, undefined, false);
       }
     }
-
-    if (this.options.autoAck || this.options.autoAck === undefined) channel.ack(message);
   }
 
   private exploreHandlers(): HandlerWrapper[] {
