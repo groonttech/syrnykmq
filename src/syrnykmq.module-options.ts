@@ -20,6 +20,7 @@ export type Queue = amqplib.Options.AssertQueue & {
   name: string;
   default?: boolean;
   bindings?: Binding[];
+  useDefaultDLX?: boolean;
 };
 
 export type SyrnykmqModuleOptions = {

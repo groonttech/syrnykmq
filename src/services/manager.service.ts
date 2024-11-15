@@ -12,6 +12,7 @@ import { AmqpConnectionManager, ChannelWrapper, connect } from 'amqp-connection-
 import { Channel } from 'amqplib';
 import { SyrnykmqTopologyService } from './topology.service';
 import { SyrnykmqConsumerService } from './consumer.service';
+import { FailedConnectToBrokerException } from './exceptions';
 
 export const DEFAULT_RECONNECT_TIME = 5;
 export const DEFAULT_HEARTBEAT_TIME = 5;
@@ -48,16 +49,15 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
           setup: async (channel: Channel) => {
             await this.topologyService.setupExchanges(channel);
             await this.topologyService.setupQueues(channel);
-            await this.consumerService.setupHandlers(channel);
             await this.consumerService.setupReplyMessageHandler(channel);
+            await this.consumerService.setupHandlers(channel);
             resolveSetup();
           },
         });
       });
+
       this.manager.on('connectFailed', err => {
-        // ! Throw custom error
-        this.logger.error('Failed to connect to RabbitMQ broker', err.err);
-        resolveSetup();
+        throw new FailedConnectToBrokerException(err.err.message);
       });
       this.manager.on('disconnect', () => {
         this.logger.warn('Disconnected from AMQP broker');

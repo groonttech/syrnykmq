@@ -7,6 +7,7 @@ import { defaultSerializer } from '../serial';
 import { first, interval, lastValueFrom, map, race } from 'rxjs';
 import { randomUUID } from 'crypto';
 import { SyrnykmqConsumerService } from './consumer.service';
+import { FailedReceiveResponseException, FailedResponseException } from './exceptions';
 
 export const requestReplyTimeout = 5000;
 
@@ -28,24 +29,22 @@ export class SyrnykmqProducerService {
     await this.managerService.channel.publish(exchange, routingKey, serializedContent, options);
   }
 
-  public async request<TResponse extends Record<string, unknown>, TContent extends Record<string, unknown> = Record<string, unknown>>(
-    exchange: string,
-    routingKey: string,
-    content: TContent,
-    options?: PublishOptions,
-  ): Promise<TResponse> {
+  public async request<
+    TResponse extends Record<string, unknown>,
+    TContent extends Record<string, unknown> = Record<string, unknown>,
+  >(exchange: string, routingKey: string, content: TContent, options?: PublishOptions): Promise<TResponse> {
     const correlationId = randomUUID();
     const response$ = this.consumerService.replyMessage$.pipe(
       first(response => response.correlationId === correlationId),
       map(response => {
-        if (response.error) throw new Error(response.error);
+        if (response.error) throw new FailedResponseException(response.error);
         return response.content as TResponse;
       }),
     );
     const timeout$ = interval(requestReplyTimeout).pipe(
       first(),
       map(() => {
-        throw new Error(`Failed to receive a response`);
+        throw new FailedReceiveResponseException();
       }),
     );
     const response = lastValueFrom(race(response$, timeout$));

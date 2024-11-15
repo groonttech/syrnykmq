@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import { MODULE_OPTIONS_TOKEN } from '../syrnykmq.module-definition';
 import { Binding, Exchange, Queue, SyrnykmqModuleOptions } from '../syrnykmq.module-options';
 import { Channel } from 'amqplib';
+import { NotSetDefaultExchangeException, NotSetDefaultQueueException } from './exceptions';
 
 @Injectable()
 export class SyrnykmqTopologyService {
@@ -14,17 +15,18 @@ export class SyrnykmqTopologyService {
   }
 
   public get defaultExchange(): string {
-    if (!this._defaultExchange) throw Error('default exchange is not set');
+    if (!this._defaultExchange) throw new NotSetDefaultExchangeException();
     return this._defaultExchange;
   }
 
   public get defaultQueue(): string {
-    if (!this._defaultQueue) throw Error('default queue is not set');
+    if (!this._defaultQueue) throw new NotSetDefaultQueueException();
     return this._defaultQueue;
   }
 
   public async setupExchanges(channel: Channel): Promise<void> {
     this.options.exchanges = this.options.exchanges || [];
+
     await Promise.all(this.options.exchanges.map(exchange => this.assertExchange(exchange, channel)));
     if (!this._defaultExchange) {
       this._defaultExchange = this.options.exchanges[0].name;
@@ -38,6 +40,7 @@ export class SyrnykmqTopologyService {
       // this.logger.warn('Since no queue has been asserted, it is only possible to send messages');
       return;
     }
+
     await Promise.all(this.options.queues.map(queue => this.assertQueue(queue, channel)));
     if (!this._defaultQueue) {
       this._defaultQueue =
@@ -51,6 +54,7 @@ export class SyrnykmqTopologyService {
     this.logger.log(`Asserted exchange: ${exchange.name} (${exchange.type})`);
     if (exchange.default) this._defaultExchange = exchange.name;
     exchange.bindings = exchange.bindings || [];
+
     await Promise.all(exchange.bindings.map(binding => this.bindExchange(exchange.name, binding, channel)));
   }
 
@@ -59,10 +63,12 @@ export class SyrnykmqTopologyService {
       await channel.assertQueue(queue);
       return;
     }
+
     await channel.assertQueue(queue.name, queue);
     this.logger.log(`Asserted queue: ${queue.name}`);
     if (queue.default) this._defaultQueue = queue.name;
     queue.bindings = queue.bindings || [];
+
     await Promise.all(queue.bindings.map(binding => this.bindQueue(queue.name, binding, channel)));
   }
 
