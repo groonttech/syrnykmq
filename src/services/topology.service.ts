@@ -68,7 +68,7 @@ export class SyrnykmqTopologyService {
     this.logger.log(`Asserted queue: ${queue.name}`);
     if (queue.default) this._defaultQueue = queue.name;
     queue.bindings = queue.bindings || [];
-    
+
     await Promise.all(queue.bindings.map(binding => this.bindQueue(queue.name, binding, channel)));
   }
 

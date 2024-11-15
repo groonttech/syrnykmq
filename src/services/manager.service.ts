@@ -40,7 +40,7 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
       this.manager = connect(this.options.urls, {
         reconnectTimeInSeconds: this.options.reconnectTimeInSeconds || DEFAULT_RECONNECT_TIME,
         heartbeatIntervalInSeconds: this.options.heartbeatIntervalInSeconds || DEFAULT_HEARTBEAT_TIME,
-        connectionOptions: this.options.connectionOptions || {}
+        connectionOptions: this.options.connectionOptions || {},
       });
       this.manager.on('connect', () => {
         this.logger.log('Successfully connected to AMQP broker');
@@ -55,11 +55,11 @@ export class SyrnykmqManagerService implements OnApplicationBootstrap, OnApplica
           },
         });
       });
-      
+
       this.manager.on('connectFailed', err => {
         throw new FailedConnectToBrokerException(err.err.message);
       });
-      this.manager.on('disconnect', (params) => {
+      this.manager.on('disconnect', () => {
         this.logger.warn('Disconnected from AMQP broker');
       });
     });

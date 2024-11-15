@@ -13,7 +13,7 @@ export type Exchange = amqplib.Options.AssertExchange & {
   name: string;
   default?: boolean;
   type: 'direct' | 'topic' | 'headers' | 'fanout' | 'match';
-  bindings?: Binding[]; // Test
+  bindings?: Binding[];
 };
 
 export type Queue = amqplib.Options.AssertQueue & {

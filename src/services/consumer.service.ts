@@ -102,15 +102,10 @@ export class SyrnykmqConsumerService {
     handlerWrappers: HandlerWrapper[],
   ): Promise<void> {
     const wrapper = handlerWrappers.find(wrapper => {
-      if (this.options.resolveTopics === false) 
-        return wrapper.pattern === message.fields.routingKey;
+      if (this.options.resolveTopics === false) return wrapper.pattern === message.fields.routingKey;
 
       const regexPattern = new RegExp(
-        `^${wrapper.pattern
-            .replace(/\./g, '\\.')
-            .replace(/\*/g, '[^.]+')
-            .replace(/#/g, '.*')
-        }$`
+        `^${wrapper.pattern.replace(/\./g, '\\.').replace(/\*/g, '[^.]+').replace(/#/g, '.*')}$`,
       );
       return regexPattern.test(message.fields.routingKey);
     });
@@ -125,7 +120,7 @@ export class SyrnykmqConsumerService {
         responseHeaders = { ...responseHeaders, ...headers };
       },
     };
-      
+
     try {
       const content = this.options.deserializer
         ? this.options.deserializer(message.content)
@@ -154,8 +149,7 @@ export class SyrnykmqConsumerService {
           headers: { 'x-error': (error as Error).name },
         });
         if (this.options.autoAck || this.options.autoAck === undefined) channel.ack(message);
-      }
-      else {
+      } else {
         if (this.options.autoAck || this.options.autoAck === undefined) channel.nack(message, undefined, false);
       }
     }
@@ -198,7 +192,7 @@ export class SyrnykmqConsumerService {
       'amqp',
     );
     const handlerMeta = this.reflector.get<HandlerMeta>(SYRNYKMQ_HANDLER, consumerWrapper.instance[methodKey]);
-    
+
     return handlerMeta.patterns.map<HandlerWrapper>(pattern => ({
       instance: consumerWrapper.instance,
       pattern,

@@ -29,12 +29,10 @@ export class SyrnykmqProducerService {
     await this.managerService.channel.publish(exchange, routingKey, serializedContent, options);
   }
 
-  public async request<TResponse extends Record<string, unknown>, TContent extends Record<string, unknown> = Record<string, unknown>>(
-    exchange: string,
-    routingKey: string,
-    content: TContent,
-    options?: PublishOptions,
-  ): Promise<TResponse> {
+  public async request<
+    TResponse extends Record<string, unknown>,
+    TContent extends Record<string, unknown> = Record<string, unknown>,
+  >(exchange: string, routingKey: string, content: TContent, options?: PublishOptions): Promise<TResponse> {
     const correlationId = randomUUID();
     const response$ = this.consumerService.replyMessage$.pipe(
       first(response => response.correlationId === correlationId),
